@@ -1,0 +1,148 @@
+<p-toolbar styleClass="mb-4" *ngIf="isAdmin">
+    <ng-template pTemplate="left">
+        <p-dropdown
+            [options]="employees"
+            [(ngModel)]="selectedEmployee"
+            optionLabel="username"
+            placeholder="Sélectionnez un employé"
+            (onChange)="getUserCalendar($event.value.id)"
+            appendTo="body"
+        ></p-dropdown>
+        <i
+            class="p-toolbar-separator pi pi-bars mr-2"
+            style="vertical-align: middle"
+        ></i>
+        <button
+            pButton
+            pRipple
+            label="Ajouter une semaine"
+            icon="pi pi-plus"
+            class="p-button-success mr-2"
+            (click)="openNew()"
+        ></button>
+        
+        <p-fileUpload
+            #fubauto
+            mode="basic"
+            name="demo[]"
+            accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+            [customUpload]="true"
+            (uploadHandler)="onUpload($event)"
+            [auto]="true"
+            chooseLabel="Importer Excel"
+            chooseIcon="pi pi-upload"
+            [disabled]="!selectedEmployee"
+        ></p-fileUpload>
+        
+    </ng-template>
+
+    <ng-template pTemplate="right">
+        <button
+            pButton
+            pRipple
+            label="Weekend"
+            icon="pi pi-eye"
+            class="p-button mr-2"
+            (click)="toggleWeekends()"
+        ></button>
+        <i
+            class="p-toolbar-separator pi pi-bars mr-2"
+            style="vertical-align: middle"
+        ></i>
+        <button
+            type="button"
+            pButton
+            pRipple
+            label="Exporter Excel"
+            icon="pi pi-file-excel"
+            (click)="exportExcel()"
+            class="p-button-secondary mr-2"
+            [disabled]="!selectedEmployee"
+        ></button>
+    </ng-template>
+</p-toolbar>
+
+<full-calendar [options]="calendarOptions" [events]="events"></full-calendar>
+
+<p-dialog
+    [(visible)]="dialog"
+    [style]="{ width: '450px' }"
+    header="New entry"
+    [modal]="true"
+    styleClass="p-fluid"
+>
+    <ng-template pTemplate="content">
+        <div class="field">
+            <label for="users">Employé</label>
+            <p-dropdown
+                [options]="employees"
+                [(ngModel)]="selectedEmployee"
+                optionLabel="username"
+                placeholder="Sélectionnez un employé"
+                (onChange)="getUserCalendar($event.value.id)"
+                appendTo="body"
+            ></p-dropdown>
+        </div>
+
+        <div class="field">
+            <label for="startDate">Plage de dates</label>
+            <p-calendar
+                [(ngModel)]="rangeDates"
+                [showIcon]="true"
+                [firstDayOfWeek]="1"
+                [disabledDays]="[0, 2, 3, 4, 5, 6]"
+                (onSelect)="dateRangeControl()"
+                selectionMode="range"
+                [readonlyInput]="true"
+                appendTo="body"
+            ></p-calendar>
+        </div>
+
+        <div class="field">
+            <label for="numberOfHours">Nombre d'heures travaillées</label>
+            <p-inputNumber
+                id="numberOfHours"
+                [(ngModel)]="presence.numberOfHours"
+                [showButtons]="true"
+                buttonLayout="horizontal"
+                decrementButtonClass="p-button-danger"
+                incrementButtonClass="p-button-success"
+                incrementButtonIcon="pi pi-plus"
+                decrementButtonIcon="pi pi-minus"
+                [min]="1"
+                [max]="40"
+            ></p-inputNumber>
+        </div>
+
+        <div class="field">
+            <label for="description">Description</label>
+            <input
+                type="text"
+                pInputText
+                id="description"
+                [(ngModel)]="presence.description"
+                required
+                autofocus
+            />
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button
+            pButton
+            pRipple
+            label="Cancel"
+            icon="pi pi-times"
+            class="p-button-text p-button-danger"
+            (click)="hideDialog()"
+        ></button>
+        <button
+            pButton
+            pRipple
+            label="Save"
+            icon="pi pi-check"
+            class="p-button-text"
+            (click)="saveEntry()"
+        ></button>
+    </ng-template>
+</p-dialog>

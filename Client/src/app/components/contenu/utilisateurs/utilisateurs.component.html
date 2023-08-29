@@ -1,0 +1,213 @@
+<p-toast></p-toast>
+
+<div class="card">
+    <p-toolbar styleClass="mb-4">
+        <ng-template pTemplate="left">
+            <button
+                pButton
+                pRipple
+                label="Ajouter un employé"
+                icon="pi pi-plus"
+                class="p-button-success mr-2"
+                (click)="openNew()"
+            ></button>
+            <button
+                pButton
+                pRipple
+                label="Supprimer la sélection"
+                icon="pi pi-trash"
+                class="p-button-danger"
+                (click)="deleteSelectedUsers()"
+                [disabled]="!selectedUsers || !selectedUsers.length"
+            ></button>
+            
+        </ng-template>
+    
+
+         <ng-template pTemplate="right">
+            <button
+                pButton
+                pRipple
+                label="Export PDF"
+                icon="pi pi-export"
+                class="p-button-help"
+                (click)="ExportPDF()"
+            ></button>
+            
+        </ng-template> 
+
+    </p-toolbar>
+
+    <p-table
+        #dt
+        [value]="users"
+        [rows]="10"
+        [paginator]="true"
+        [globalFilterFields]="['username', 'email', 'firstname', 'lastname']"
+        responsiveLayout="scroll"
+        [(selection)]="selectedUsers"
+        [rowHover]="true"
+        dataKey="id"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [showCurrentPageReport]="true"
+    >
+        <ng-template pTemplate="caption">
+            <div class="flex align-items-center justify-content-between">
+                <h5 class="m-0">Gestion des employés</h5>
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input
+                    #globalSearch
+                        pInputText
+                        type="text"
+                        (input)=" dt.filterGlobal(
+                                        globalSearch.value,
+                                        'contains'
+                                    )
+                                "
+                        placeholder="Rechercher..."
+                    />
+                </span>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 3rem">
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <th pSortableColumn="username">
+                    Nom d'utilisateur <p-sortIcon field="username"></p-sortIcon>
+                </th>
+                <th pSortableColumn="email">
+                    Email <p-sortIcon field="email"></p-sortIcon>
+                </th>
+                <th pSortableColumn="firstname">
+                    Prénom <p-sortIcon field="firstname"></p-sortIcon>
+                </th>
+                <th pSortableColumn="lastname">
+                    Nom <p-sortIcon field="lastname"></p-sortIcon>
+                </th>
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-user>
+            <tr>
+                <td>
+                    <p-tableCheckbox [value]="user"></p-tableCheckbox>
+                </td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.firstName }}</td>
+                <td>{{ user.lastName }}</td>
+                <td>
+                    <button
+                        pButton
+                        pRipple
+                        icon="pi pi-pencil"
+                        class="p-button-rounded p-button-success mr-2"
+                        (click)="editUser(user)"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        icon="pi pi-trash"
+                        class="p-button-rounded p-button-warning"
+                        (click)="deleteUser(user)"
+                    ></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+            <div class="flex align-items-center justify-content-between">
+                En total il y a {{ users ? users.length : 0 }} employé(s).
+            </div>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog
+    [(visible)]="userDialog"
+    [style]="{ width: '450px' }"
+    header="User Details"
+    [modal]="true"
+    styleClass="p-fluid"
+>
+    <ng-template pTemplate="content">
+        <div class="field">
+            <label for="name">Nom d'utilisateur</label>
+            <input
+                type="text"
+                pInputText
+                id="name"
+                [(ngModel)]="user.username"
+                required
+                autofocus
+            />
+            <small class="p-error" *ngIf="!user.username"
+                >Username is required.</small
+            >
+        </div>
+
+        <div class="field">
+            <label for="email">Email</label>
+            <input
+                type="email"
+                pInputText
+                id="email"
+                [(ngModel)]="user.email"
+                required
+                autofocus
+            />
+            <small class="p-error" *ngIf="!user.email"
+                >Email is required.</small
+            >
+        </div>
+
+        <div class="field">
+            <label for="firstName">Prénom</label>
+            <input
+                type="text"
+                pInputText
+                id="firstName"
+                [(ngModel)]="user.firstName"
+                required
+                autofocus
+            />
+        </div>
+
+        <div class="field">
+            <label for="lastName">Nom</label>
+            <input
+                type="text"
+                pInputText
+                id="lastName"
+                [(ngModel)]="user.lastName"
+                required
+                autofocus
+            />
+        </div>
+
+ 
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button
+            pButton
+            pRipple
+            label="Cancel"
+            icon="pi pi-times"
+            class="p-button-text"
+            (click)="hideDialog()"
+        ></button>
+        <button
+            pButton
+            pRipple
+            label="Save"
+            icon="pi pi-check"
+            class="p-button-text"
+            (click)="saveUser()"
+        ></button>
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>

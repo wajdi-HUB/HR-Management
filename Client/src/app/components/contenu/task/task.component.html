@@ -1,0 +1,216 @@
+<div class="card">
+    <div class="card">
+        <p-dialog [(visible)]="showAlertDialog" [modal]="true" [style]="{ 'max-width': '400px' }">
+            <p-header>
+              <div class="dialog-header">
+                <i class="pi pi-exclamation-circle"></i>
+                <h4>Deadline Alert</h4>
+              </div>
+            </p-header>
+            <ng-container *ngFor="let task of tasks" >
+              <div class="task-item"*ngIf="task.taskStatus=='Pending'">
+                
+                <span>{{ task.taskName }}</span>
+              </div>
+            </ng-container>
+            <p-footer>
+              <button pButton type="button" label="OK" (click)="hideAlert()" class="p-button-secondary"></button>
+            </p-footer>
+          </p-dialog>
+
+
+
+    <p-toolbar styleClass="mb-4">
+      <ng-template pTemplate="left">
+        <button
+          pButton
+          pRipple
+          label="New"
+          icon="pi pi-plus"
+          class="p-button-success mr-2"
+          (click)="openNew()"
+          *ngIf="isAdmin"
+        ></button>
+        <button
+          pButton
+          pRipple
+          label="Delete"
+          icon="pi pi-trash"
+          class="p-button-danger"
+          (click)="deleteSelectedTasks()"
+          [disabled]="!selectedTasks || !selectedTasks.length"
+          *ngIf="isAdmin"
+        ></button>
+      </ng-template>
+
+      <ng-template pTemplate="right">
+       
+      </ng-template>
+    </p-toolbar>
+
+    <p-table
+      #dt
+      [value]="tasks"
+      [rows]="10"
+      [paginator]="true"
+      [globalFilterFields]="['taskName', 'taskStatus','deadline']"
+      responsiveLayout="scroll"
+      [(selection)]="selectedTasks"
+      [rowHover]="true"
+      dataKey="id"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      [showCurrentPageReport]="true"
+    >
+      <ng-template pTemplate="caption">
+        <div class="flex align-items-center justify-content-between">
+          <h5 class="m-0">Manage Tasks</h5>
+          <span class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input
+              pInputText
+              type="text"
+              (input)="filterTasks($event.target)"
+              placeholder="Search..."
+            />
+          </span>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 3rem">
+            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+          </th>
+          <th pSortableColumn="taskName">
+            Task Name <p-sortIcon field="taskName"></p-sortIcon>
+          </th>
+          <th pSortableColumn="taskStatus">
+            Task Status <p-sortIcon field="taskStatus"></p-sortIcon>
+          </th>
+          <th pSortableColumn="startDate">
+            Start Date <p-sortIcon field="startDate"></p-sortIcon>
+          </th>
+          <th pSortableColumn="deadline">
+            Deadline <p-sortIcon field="deadline"></p-sortIcon>
+          </th>
+          <th></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-task>
+        <tr>
+          <td>
+            <p-tableCheckbox [value]="task"></p-tableCheckbox>
+          </td>
+          <td>{{ task.taskName }}</td>
+          <td>{{ task.taskStatus }}</td>
+          <td>{{ task.startDate }}</td>
+          <td>{{ task.deadline }}</td>
+          <td>
+      
+            <button
+              pButton
+              pRipple
+              icon="pi pi-trash"
+              class="p-button-rounded p-button-warning"
+              (click)="deleteTask(task)"
+              *ngIf="isAdmin"
+            ></button>
+            <button style="margin-left: 3%;"
+              pButton
+              pRipple
+              icon="pi pi-check"
+              class="p-button-rounded p-button-secondary"
+              (click)="editStatus(task)"
+              *ngIf="isAdmin"
+            ></button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="summary">
+        <div class="flex align-items-center justify-content-between">
+          In total there are {{ tasks ? tasks.length : 0 }} tasks.
+        </div>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <p-dialog [(visible)]="taskDialog" [style]="{ width: '450px' }" header="Task Details" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+      <!-- <div class="field">
+        <label for="projectId">Project ID</label>
+        <input
+          type="text"
+          pInputText
+          id="projectId"
+          [(ngModel)]="projectId"
+          required
+         
+        />
+        <small class="p-error" *ngIf="!projectId">Project ID is required.</small>
+      </div> -->
+      <div class="field" >
+        <label for="projectId">projectId</label>
+        <p-dropdown
+            [options]="projectsId"
+            [(ngModel)]="projectId"
+            
+            appendTo="body"
+        ></p-dropdown>
+    </div> 
+      <div class="field">
+        <label for="taskName">Name</label>
+        <input
+          type="text"
+          pInputText
+          id="taskName"
+          [(ngModel)]="task.taskName"
+          required
+          
+        />
+        <small class="p-error" *ngIf="!task.taskName">Name is required.</small>
+      </div>
+      <div class="field">
+        <label for="startDate">Start Date</label>
+        <p-calendar
+        [(ngModel)]="task.startDate"
+        [disabledDays]="[0, 6]"
+        [firstDayOfWeek]="1"
+        [showIcon]="true"
+        appendTo="body"
+        [minDate]="today"
+    ></p-calendar>
+        <small class="p-error" *ngIf="!task.startDate">Start Date is required.</small>
+      </div>
+      <div class="field">
+        <label for="deadline">Deadline</label>
+        <p-calendar
+        [(ngModel)]="task.deadline"
+        [disabledDays]="[0, 6]"
+        [firstDayOfWeek]="1"
+        [showIcon]="true"
+        appendTo="body"
+        [minDate]="task.startDate!"
+    ></p-calendar>
+        <small class="p-error" *ngIf="!task.deadline">Deadline is required.</small>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="footer">
+      <button
+        pButton
+        pRipple
+        label="Cancel"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="hideDialog()"
+      ></button>
+      <button
+        pButton
+        pRipple
+        label="Save"
+        icon="pi pi-check"
+        class="p-button-text"
+        (click)="saveTask()"
+      ></button>
+    </ng-template>
+  </p-dialog>
+
+  <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>

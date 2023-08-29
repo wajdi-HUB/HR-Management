@@ -1,0 +1,161 @@
+<div class="card">
+  <p-toolbar styleClass="mb-4">
+    <ng-template pTemplate="left">
+      <button
+        pButton
+        pRipple
+        label="Ajouter un jour férié"
+        icon="pi pi-plus"
+        class="p-button-success mr-2"
+        (click)="openNew()"
+      ></button>
+      <button
+        pButton
+        pRipple
+        label="Supprimer la sélection"
+        icon="pi pi-trash"
+        class="p-button-danger"
+        (click)="deleteSelectedHolidays()"
+        [disabled]="!selectedHolidays || !selectedHolidays.length"
+      ></button>
+    </ng-template>
+  </p-toolbar>
+
+  <p-table
+    #dt
+    [value]="holidays"
+    [rows]="10"
+    [paginator]="true"
+    [globalFilterFields]="['name']"
+    responsiveLayout="scroll"
+    [(selection)]="selectedHolidays"
+    [rowHover]="true"
+    dataKey="id"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [showCurrentPageReport]="true"
+  >
+    <ng-template pTemplate="caption">
+      <div class="flex align-items-center justify-content-between">
+        <h5 class="m-0">Gestion des jours fériés</h5>
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            (input)="applyFilterGlobal($event, 'contains')"
+            placeholder="Rechercher..."
+          />
+        </span>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 3rem">
+          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+        </th>
+        <th pSortableColumn="name">
+          Nom du jour férié <p-sortIcon field="name"></p-sortIcon>
+        </th>
+        <th pSortableColumn="startDate">
+          Date de début <p-sortIcon field="startDate"></p-sortIcon>
+        </th>
+        <th pSortableColumn="endDate">
+          Date de fin <p-sortIcon field="endDate"></p-sortIcon>
+        </th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-holiday>
+      <tr>
+        <td>
+          <p-tableCheckbox [value]="holiday"></p-tableCheckbox>
+        </td>
+        <td>{{ holiday.name }}</td>
+        <td>{{ holiday.startDate }}</td>
+        <td>{{ holiday.endDate }}</td>
+        <td>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-pencil"
+            class="p-button-rounded p-button-success mr-2"
+            (click)="editHoliday(holiday)"
+          ></button>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-trash"
+            class="p-button-rounded p-button-warning"
+            (click)="deleteHoliday(holiday)"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">
+      <div class="flex align-items-center justify-content-between">
+        En total il y a {{ holidays ? holidays.length : 0 }} jour(s) férié(s).
+      </div>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog
+  [(visible)]="holidayDialog"
+  [style]="{ width: '450px' }"
+  header="Jour férié"
+  [modal]="true"
+  styleClass="p-fluid"
+  [maximizable]="true"
+>
+  <ng-template pTemplate="content">
+    <div class="field">
+      <label for="name">Nom du jour férié</label>
+      <input
+        type="text"
+        pInputText
+        id="name"
+        [(ngModel)]="holiday.name"
+        required
+        autofocus
+      />
+      <small class="p-error" *ngIf="!holiday.name"
+        >Holiday name is required.</small
+      >
+    </div>
+
+    <div class="field">
+      <label for="startDate">Plage de dates</label>
+      <p-calendar
+        [(ngModel)]="rangeDates"
+        [showIcon]="true"
+        [firstDayOfWeek]="1"
+        [disabledDays]="[0, 6]"
+        selectionMode="range"
+        [readonlyInput]="true"
+        appendTo="body"
+      ></p-calendar>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancel"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="hideDialog()"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Save"
+      icon="pi pi-check"
+      class="p-button-text"
+      (click)="saveHoliday()"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+<p-toast></p-toast>

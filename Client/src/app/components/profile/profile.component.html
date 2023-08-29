@@ -1,0 +1,215 @@
+<div class="surface-section" style="border-radius: 1rem">
+    <div class="text-center mb-5 p-5">
+        <div class="text-900 text-3xl font-medium mb-3">
+            Welcome, {{ user.username }}!
+        </div>
+
+        <ul class="list-none p-0 m-0">
+            <li
+                class="flex align-items-center py-3 px-2 surface-border flex-wrap"
+            >
+                <div class="text-500 w-6 md:w-2 font-medium">
+                    Nom d'utilisateur
+                </div>
+                <div
+                    class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1"
+                >
+                    {{ user.username }}
+                </div>
+            </li>
+            <li
+                class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap"
+            >
+                <div class="text-500 w-6 md:w-2 font-medium">Nom</div>
+                <div
+                    class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1"
+                >
+                    <p-inplace
+                        [closable]="true"
+                        [style]="{ 'min-height': '33px' }"
+                        (onDeactivate)="saveUser()"
+                        closeIcon="pi pi-save"
+                    >
+                        <ng-template pTemplate="display">
+                            {{ user.lastName }}
+                        </ng-template>
+                        <ng-template pTemplate="content">
+                            <input
+                                type="text"
+                                [(ngModel)]="user.lastName"
+                                pInputText
+                            />
+                        </ng-template>
+                    </p-inplace>
+                </div>
+            </li>
+            <li
+                class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap"
+            >
+                <div class="text-500 w-6 md:w-2 font-medium">Prénom</div>
+                <div
+                    class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1"
+                >
+                    <p-inplace
+                        [closable]="true"
+                        [style]="{ 'min-height': '33px' }"
+                        (onDeactivate)="saveUser()"
+                        closeIcon="pi pi-save"
+                    >
+                        <ng-template pTemplate="display">
+                            {{ user.firstName }}
+                        </ng-template>
+                        <ng-template pTemplate="content">
+                            <input
+                                type="text"
+                                [(ngModel)]="user.firstName"
+                                pInputText
+                            />
+                        </ng-template>
+                    </p-inplace>
+                </div>
+            </li>
+            <li
+                class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap"
+            >
+                <div class="text-500 w-6 md:w-2 font-medium">Email</div>
+                <div
+                    class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1"
+                >
+                    <p-inplace
+                        [closable]="true"
+                        [style]="{ 'min-height': '33px' }"
+                        (onDeactivate)="saveUser()"
+                        closeIcon="pi pi-save"
+                    >
+                        <ng-template pTemplate="display">
+                            {{ user.email }}
+                        </ng-template>
+                        <ng-template pTemplate="content">
+                            <input
+                                type="text"
+                                [(ngModel)]="user.email"
+                                pInputText
+                            />
+                        </ng-template>
+                    </p-inplace>
+                </div>
+            </li>
+
+            <li
+                class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap"
+            >
+                <div class="text-500 w-6 md:w-2 font-medium">Password</div>
+                <div
+                    class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1"
+                >
+                    <p-inplace
+                        [closable]="true"
+                        [style]="{ 'min-height': '33px' }"
+                        (onDeactivate)="saveUserPassword()"
+                        closeIcon="pi pi-save"
+                    >
+                        <ng-template pTemplate="display">
+                            ••••••••
+                        </ng-template>
+                        <ng-template pTemplate="content">
+                            <input
+                                type="password"
+                                [(ngModel)]="password"
+                                pInputText
+                            />
+                        </ng-template>
+                    </p-inplace>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="surface-section" style="border-radius: 1rem">
+    <div class="mb-5 p-5">
+        <ul class="list-none p-0 m-0">
+            <li
+                class="flex align-items-center py-3 px-2 surface-border flex-wrap"
+            >
+                <div class="text-500 w-6 md:w-2 font-medium">
+                    Solde de congé restant
+                </div>
+                <div
+                    class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1 text-center"
+                >
+                    {{ soldeConge }}
+                </div>
+                <div class="w-6 md:w-2 flex justify-content-end">
+                    <button
+                        *ngIf="!cantRequestConversion; else elseBlock"
+                        pButton
+                        pRipple
+                        label="Demande de conversion"
+                        icon="pi pi-send"
+                        class="p-button-text"
+                        (click)="showDialog()"
+                        [disabled]="cantRequestConversion"
+                    ></button>
+                    <ng-template #elseBlock>
+                        <div class="text-500">
+                            <i class="pi pi-clock mr-2"></i>Demande en cours de
+                            traitement
+                        </div>
+                    </ng-template>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<p-dialog
+    [(visible)]="dialog"
+    [style]="{ width: '450px' }"
+    header="Demande de conversion"
+    [modal]="true"
+    styleClass="p-fluid"
+    [maximizable]="true"
+>
+    <ng-template pTemplate="content">
+        <ul class="list-none p-0 m-0">
+            <li
+                class="flex align-items-center py-3 px-2 surface-border flex-wrap"
+            >
+                <div class="text-500 w-6 font-medium">
+                    Solde de congé restant
+                </div>
+                <div
+                    class="text-900 w-full w-6 md:flex-order-0 flex-order-1 text-center"
+                >
+                    {{ soldeConge }}
+                </div>
+            </li>
+            <li>
+                <p-selectButton
+                    [options]="stateOptions"
+                    [(ngModel)]="value"
+                    optionLabel="label"
+                    optionValue="value"
+                ></p-selectButton>
+            </li>
+        </ul>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button
+            pButton
+            pRipple
+            label="Cancel"
+            icon="pi pi-times"
+            class="p-button-text"
+            (click)="hideDialog()"
+        ></button>
+        <button
+            pButton
+            pRipple
+            label="Save"
+            icon="pi pi-check"
+            class="p-button-text"
+            (click)="sendRequest()"
+        ></button>
+    </ng-template>
+</p-dialog>

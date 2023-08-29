@@ -1,0 +1,157 @@
+<div class="flex align-items-center justify-content-center">
+    <div style="width: 60rem">
+        <form
+            [formGroup]="signupForm"
+            (ngSubmit)="register()"
+            style="
+                border-radius: 56px;
+                padding: 0.3rem;
+                background: linear-gradient(
+                    180deg,
+                    var(--primary-color) 10%,
+                    rgba(33, 150, 243, 0) 30%
+                );
+            "
+        >
+            <div
+                class="h-full w-full m-0 py-7 px-4"
+                style="
+                    border-radius: 53px;
+                    background: linear-gradient(
+                        180deg,
+                        var(--surface-50) 38.9%,
+                        var(--surface-0)
+                    );
+                "
+            >
+                <div class="text-center mb-5">
+                    <div class="text-900 text-3xl font-medium mb-3">
+                        Welcome to HR!
+                    </div>
+                    <span class="text-600 font-medium"
+                        >Sign up to continue</span
+                    >
+                </div>
+
+                <div class="w-full md:w-10 mx-auto">
+                    <label class="block text-900 text-xl font-medium mb-2"
+                        >Username</label
+                    >
+                    <input
+                        formControlName="username"
+                        type="text"
+                        name="username"
+                        placeholder="username"
+                        pInputText
+                        class="w-full mb-3"
+                        style="padding: 1rem"
+                    />
+                    <label class="block text-900 text-xl font-medium mb-2"
+                        >Firstname</label
+                    >
+                    <input
+                        formControlName="firstName"
+                        type="text"
+                        name="firstName"
+                        placeholder="First Name"
+                        pInputText
+                        class="w-full mb-3"
+                        style="padding: 1rem"
+                    />
+                    <label class="block text-900 text-xl font-medium mb-2"
+                        >Lastname</label
+                    >
+                    <input
+                        formControlName="lastName"
+                        type="text"
+                        name="lastName"
+                        placeholder="Last Name"
+                        pInputText
+                        class="w-full mb-3"
+                        style="padding: 1rem"
+                    />
+                    <p-message
+                        *ngIf="username && username.invalid && username.touched"
+                        severity="warn"
+                        text="username required!"
+                        styleClass="mr-2"
+                    ></p-message>
+                    <label class="block text-900 text-xl font-medium mb-2"
+                        >Email</label
+                    >
+                    <input
+                        formControlName="email"
+                        type="text"
+                        name="email"
+                        placeholder="Email address"
+                        pInputText
+                        class="w-full mb-3"
+                        style="padding: 1rem"
+                    />
+                    <p-message
+                        *ngIf="email && email.invalid && email.touched"
+                        severity="warn"
+                        text="email required!"
+                        styleClass="mr-2"
+                    ></p-message>
+                    <label class="block text-900 text-xl font-medium mb-2"
+                        >Phone</label
+                    >
+                    <input
+                        formControlName="phone"
+                        type="text"
+                        name="phone"
+                        placeholder="Phone"
+                        pInputText
+                        class="w-full mb-3"
+                        style="padding: 1rem"
+                    />
+                    <p-message
+                        *ngIf="phone && phone.invalid && phone.touched"
+                        severity="warn"
+                        text="Phone required!"
+                        styleClass="mr-2"
+                    ></p-message>
+
+                    <label class="block text-900 text-xl font-medium mb-2"
+                        >Password</label
+                    >
+                    <input
+                        formControlName="password"
+                        type="password"
+                        name="password"
+                        placeholder="password"
+                        pInputText
+                        class="w-full mb-3"
+                        style="padding: 1rem"
+                    />
+                    <p-message
+                        *ngIf="password && password.invalid && password.touched"
+                        severity="warn"
+                        text="Password required!"
+                        styleClass="mr-2"
+                    ></p-message>
+
+                    <div
+                        class="flex align-items-center justify-content-between mb-5"
+                    >
+                        <div class="flex align-items-center"></div>
+                        <a
+                            [routerLink]="['/login']"
+                            class="font-medium no-underline ml-2 text-right cursor-pointer"
+                            style="color: var(--primary-color)"
+                            >Have an account?</a
+                        >
+                    </div>
+                    <button
+                        pButton
+                        type="submit"
+                        [disabled]="signupForm.invalid"
+                        label="signup"
+                    ></button>
+                    <!-- <p-button label="Click" ></p-button> -->
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

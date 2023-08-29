@@ -1,0 +1,193 @@
+<div class="card">
+    <p-toolbar styleClass="mb-4">
+      <ng-template pTemplate="left">
+        <button
+          pButton
+          pRipple
+          label="New"
+          icon="pi pi-plus"
+          class="p-button-success mr-2"
+          (click)="openNew()"
+        ></button>
+        <button
+          pButton
+          pRipple
+          label="Delete"
+          icon="pi pi-trash"
+          class="p-button-danger"
+          (click)="deleteSelectedTasks()"
+          [disabled]="!selectedTasks || !selectedTasks.length"
+        ></button>
+      </ng-template>
+  
+      <ng-template pTemplate="right">
+        <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help"></button>
+      </ng-template>
+    </p-toolbar>
+  
+    <p-table
+      #dt
+      [value]="tasks"
+      [rows]="10"
+      [paginator]="true"
+      [globalFilterFields]="['taskName', 'taskStatus']"
+      responsiveLayout="scroll"
+      [(selection)]="selectedTasks"
+      [rowHover]="true"
+      dataKey="id"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      [showCurrentPageReport]="true"
+    >
+      <ng-template pTemplate="caption">
+        <div class="flex align-items-center justify-content-between">
+          <h5 class="m-0">Manage Tasks</h5>
+          <span class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input
+              pInputText
+              type="text"
+              (input)="dt.filterGlobal($event.target, 'contains')"
+              placeholder="Search..."
+            />
+          </span>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 3rem">
+            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+          </th>
+          <th pSortableColumn="taskName">
+            taskName <p-sortIcon field="taskName"></p-sortIcon>
+          </th>
+          <th pSortableColumn="taskStatus">
+            taskStatus <p-sortIcon field="taskStatus"></p-sortIcon>
+          </th>
+          <th pSortableColumn="startDate">
+            startDate <p-sortIcon field="startDate"></p-sortIcon>
+        </th>
+        <th pSortableColumn="dateFinish">
+            deadline <p-sortIcon field="dateFinish"></p-sortIcon>
+        </th>
+          <th></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-task>
+        <tr>
+          <td>
+            <p-tableCheckbox [value]="task"></p-tableCheckbox>
+          </td>
+          <td>{{ task.taskName }}</td>
+          <td>{{ task.taskStatus }}</td>
+          <td>{{ task.startDate }}</td>
+          <td>{{ task.deadline }}</td>
+          <td>
+            <button
+              pButton
+              pRipple
+              icon="pi pi-pencil"
+              class="p-button-rounded p-button-success mr-2"
+              (click)="editTask(task)"
+            ></button>
+            <button
+              pButton
+              pRipple
+              icon="pi pi-trash"
+              class="p-button-rounded p-button-warning"
+              (click)="deleteTask(task)"
+            ></button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="summary">
+        <div class="flex align-items-center justify-content-between">
+          In total there are {{ tasks ? tasks.length : 0 }} tasks.
+        </div>
+      </ng-template>
+    </p-table>
+  </div>
+  
+  <p-dialog [(visible)]="taskDialog" [style]="{ width: '450px' }" header="Task Details" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div class="field">
+            <label for="name">ProjectId</label>
+            <input
+              type="text"
+              pInputText
+              id="name"
+              [(ngModel)]="projectId"
+              required
+              autofocus
+            />
+            <small class="p-error" *ngIf="!projectId">ProjectID is required.</small>
+          </div>
+      <div class="field">
+        <label for="name">Name</label>
+        <input
+          type="text"
+          pInputText
+          id="name"
+          [(ngModel)]="task.taskName"
+          required
+          autofocus
+        />
+        <small class="p-error" *ngIf="!task.taskName">Name is required.</small>
+      </div>
+      <div class="field">
+        <label for="status">Status</label>
+        <input
+          type="text"
+          pInputText
+          id="status"
+          [(ngModel)]="task.taskStatus"
+          required
+          autofocus
+        />
+        <small class="p-error" *ngIf="!task.taskStatus">Status is required.</small>
+      </div>
+      <div class="field">
+        <label for="startDate">Start Date</label>
+        <input
+          type="date"
+          pInputText
+          id="startDate"
+          [(ngModel)]="task.startDate"
+          required
+        />
+        <small class="p-error" *ngIf="!task.startDate">Start Date is required.</small>
+      </div>
+      <div class="field">
+        <label for="dateFinish">Finish Date</label>
+        <input
+          type="date"
+          pInputText
+          id="dateFinish"
+          [(ngModel)]="task.deadline"
+          required
+        />
+        <small class="p-error" *ngIf="!task.deadline">Finish Date is required.</small>
+      </div>
+      
+    </ng-template>
+    <ng-template pTemplate="footer">
+      <button
+        pButton
+        pRipple
+        label="Cancel"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="hideDialog()"
+      ></button>
+      <button
+        pButton
+        pRipple
+        label="Save"
+        icon="pi pi-check"
+        class="p-button-text"
+        (click)="saveTask()"
+      ></button>
+    </ng-template>
+  </p-dialog>
+  
+  <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+  

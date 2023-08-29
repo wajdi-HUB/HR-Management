@@ -1,0 +1,225 @@
+<div class="card">
+    <p-toolbar styleClass="mb-4">
+        <ng-template pTemplate="left">
+            <button
+                pButton
+                pRipple
+                label="New"
+                icon="pi pi-plus"
+                class="p-button-success mr-2"
+                (click)="openNew()"
+            ></button>
+            <button
+                pButton
+                pRipple
+                label="Delete"
+                icon="pi pi-trash"
+                class="p-button-danger"
+                (click)="deleteSelectedPosts()"
+                [disabled]="!selectedPosts || !selectedPosts.length"
+            ></button>
+        </ng-template>
+
+        <ng-template pTemplate="right">
+            <button
+                pButton
+                pRipple
+                label="Export"
+                icon="pi pi-upload"
+                class="p-button-help"
+            ></button>
+        </ng-template>
+    </p-toolbar>
+
+    <p-table
+        #dt
+        [value]="posts"
+        [rows]="10"
+        [paginator]="true"
+        [globalFilterFields]="['title', 'content']"
+        responsiveLayout="scroll"
+        [(selection)]="selectedPosts"
+        [rowHover]="true"
+        dataKey="id"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [showCurrentPageReport]="true"
+    >
+        <ng-template pTemplate="caption">
+            <div class="flex align-items-center justify-content-between">
+                <h5 class="m-0">Manage Posts</h5>
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input
+                        pInputText
+                        type="text"
+                        (input)="dt.filterGlobal($event.target, 'contains')"
+                        placeholder="Search..."
+                    />
+                </span>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 3rem">
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <th pSortableColumn="title">
+                    title <p-sortIcon field="title"></p-sortIcon>
+                </th>
+                <th pSortableColumn="content">
+                    content <p-sortIcon field="content"></p-sortIcon>
+                </th>
+                <th pSortableColumn="like">
+                    numberLike <p-sortIcon field="like"></p-sortIcon>
+                </th>
+                <th pSortableColumn="dislike">
+                    numberdisLike <p-sortIcon field="dislike"></p-sortIcon>
+                </th>
+                <th pSortableColumn="nbrComment">
+                    nbrComment <p-sortIcon field="nbrComment"></p-sortIcon>
+                </th>
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-post>
+            <tr>
+                <td>
+                    <p-tableCheckbox [value]="post"></p-tableCheckbox>
+                </td>
+                <td>{{ post.title }}</td>
+                <td>{{ post.content }}</td>
+                <td>{{ this.like }}</td>
+                <td>{{ this.dislike }}</td>
+                <td>{{ this.nbrComment }}</td>
+                <td>
+                    <button
+                        pButton
+                        pRipple
+                        icon="pi pi-thumbs-up"
+                        class="p-button-rounded p-button-success mr-2"
+                        (click)="likePost(post.id)"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        icon="pi pi-thumbs-down"
+                        class="p-button-rounded p-button-danger mr-2"
+                        (click)="dislikePost(post.id)"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        icon="pi pi-send"
+                        class="p-button-rounded p-button-success mr-2"
+                        (click)="openNewComment(post.id)"
+                    ></button>
+                  
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+            <div class="flex align-items-center justify-content-between">
+                In total there are {{ posts ? posts.length : 0 }} posts.
+            </div>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog
+    [(visible)]="postDialog"
+    [style]="{ width: '450px' }"
+    header="Post Details"
+    [modal]="true"
+    styleClass="p-fluid"
+>
+    <ng-template pTemplate="content">
+        <div class="field">
+            <label for="title">title</label>
+            <input
+                type="text"
+                pInputText
+                id="title"
+                [(ngModel)]="post.title"
+                required
+                autofocus
+            />
+            <small class="p-error" *ngIf="!post.title">Post is required.</small>
+        </div>
+        <div class="field">
+            <label for="content">Content</label>
+            <input
+                type="text"
+                pInputText
+                id="content"
+                [(ngModel)]="post.content"
+                required
+                autofocus
+            />
+            <small class="p-error" *ngIf="!post.content"
+                >Status is required.</small
+            >
+        </div>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            pButton
+            pRipple
+            label="Cancel"
+            icon="pi pi-times"
+            class="p-button-text"
+            (click)="hideDialog()"
+        ></button>
+        <button
+            pButton
+            pRipple
+            label="Save"
+            icon="pi pi-check"
+            class="p-button-text"
+            (click)="savePost()"
+        ></button>
+    </ng-template>
+</p-dialog>
+<p-dialog
+    [(visible)]="commentDialog"
+    [style]="{ width: '450px' }"
+    header="Comment Details"
+    [modal]="true"
+    styleClass="p-fluid"
+>
+    <ng-template pTemplate="content">
+        <div class="field">
+            <label for="content">content</label>
+            <input
+                type="text"
+                pInputText
+                id="content"
+                [(ngModel)]="comment.content"
+                required
+                autofocus
+            />
+            <small class="p-error" *ngIf="!comment.content"
+                >Comment is required.</small
+            >
+        </div>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button
+            pButton
+            pRipple
+            label="Cancel"
+            icon="pi pi-times"
+            class="p-button-text"
+            (click)="hideDialog()"
+        ></button>
+        <button
+            pButton
+            pRipple
+            label="Save"
+            icon="pi pi-check"
+            class="p-button-text"
+            (click)="saveComment()"
+        ></button>
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>

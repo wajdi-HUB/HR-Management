@@ -1,0 +1,357 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <p-toast></p-toast>
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <button
+                        pButton
+                        pRipple
+                        label="New"
+                        icon="pi pi-plus"
+                        class="p-button-success mr-2"
+                        (click)="openNew()"
+                        *ngIf="isAdmin"
+                    ></button>
+                    <button
+                        pButton
+                        pRipple
+                        label="Delete"
+                        icon="pi pi-trash"
+                        class="p-button-danger"
+                        (click)="deleteSelectedFormations()"
+                        [disabled]="
+                            !selectedFormations || !selectedFormations.length
+                        "
+                        *ngIf="isAdmin"
+                    ></button>
+                </ng-template>
+
+                <ng-template pTemplate="right">
+                    <button
+                        pButton
+                        pRipple
+                        label="Export"
+                        icon="pi pi-upload"
+                        class="p-button-help"
+                    ></button>
+                </ng-template>
+            </p-toolbar>
+
+            <p-table
+                #dt
+                [value]="formations"
+                [rows]="10"
+                [paginator]="true"
+                [globalFilterFields]="[
+                    'formationName',
+                    'formationStatus',
+                    'dateStart',
+                    'dateFinish',
+                    'members'
+                ]"
+                responsiveLayout="scroll"
+                [(selection)]="selectedFormations"
+                [rowHover]="true"
+                dataKey="id"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [showCurrentPageReport]="true"
+            >
+                <!-- <ng-template pTemplate="caption">
+
+          <div class="flex align-items-center justify-content-between">
+              <h5 class="m-0">Manage Formations</h5>
+              <span class="p-input-icon-left">
+                  <i class="pi pi-search"></i>
+                  <input
+                      pInputText
+                      type="text"
+                      (input)="dt.filterGlobal($event.target, 'contains')"
+                      placeholder="Search..."
+                  />
+              </span>
+          </div>
+      </ng-template> -->
+                <!-- <ng-template pTemplate="caption">
+          <div class="flex align-items-center justify-content-between">
+            <h5 class="m-0">Manage Formations</h5>
+            <span class="p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input
+                pInputText
+                type="text"
+                (input)="getFormationsByName($event.target.value)"
+                placeholder="Search..."
+              />
+            </span>
+          </div>
+        </ng-template> -->
+                <!-- <ng-template pTemplate="caption">
+          <div class="flex align-items-center justify-content-between">
+            <h5 class="m-0">Manage Formations</h5>
+            <span class="p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input
+                pInputText
+                type="text"
+                (input)="getFormationsByName($event.target['value'])"
+                placeholder="Search..."
+              />
+            </span>
+          </div>
+        </ng-template> -->
+                <!-- <ng-template pTemplate="caption">
+          <div class="flex align-items-center justify-content-between">
+            <h5 class="m-0">Manage Formations</h5>
+            <span class="p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input
+                pInputText
+                type="text"
+                (input)="getFormationsByName()"
+                placeholder="Search..."
+              />
+            </span>
+          </div>
+        </ng-template> -->
+                <ng-template pTemplate="caption">
+                    <div
+                        class="flex align-items-center justify-content-between"
+                    >
+                        <h5 class="m-0">Manage Formations</h5>
+                        <span class="p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input
+                                pInputText
+                                type="text"
+                                #searchInput
+                                placeholder="Search..."
+                            />
+                            <button
+                                pButton
+                                type="button"
+                                icon="pi pi-search"
+                                (click)="getFormationsByName(searchInput.value)"
+                            ></button>
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 3rem">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                        </th>
+                        <th pSortableColumn="formationName">
+                            formationName
+                            <p-sortIcon field="formationName"></p-sortIcon>
+                        </th>
+                        
+
+                        <th pSortableColumn="dateStart">
+                            dateStart
+                            <p-sortIcon field="dateStart"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="dateFinish">
+                            dateFinish
+                            <p-sortIcon field="dateFinish"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="members">
+                            members <p-sortIcon field="members"></p-sortIcon>
+                        </th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-formation>
+                    <tr>
+                        <td>
+                            <p-tableCheckbox
+                                [value]="formation"
+                            ></p-tableCheckbox>
+                        </td>
+                        <td>{{ formation.formationName }}</td>
+                        
+                        <!-- <td ><img [src]="'../assets/img/test.png'" [style.width.px]="15"></td> -->
+                        <td>{{ formation.dateStart }}</td>
+                        <td>{{ formation.dateFinish }}</td>
+                        <td>{{ formation.members }}</td>
+                        <td>
+                            <button
+                                pButton
+                                pRipple
+                                icon="pi pi-pencil"
+                                class="p-button-rounded p-button-success mr-2"
+                                (click)="editFormation(formation)"
+                                *ngIf="isAdmin"
+                            ></button>
+                            <button
+                                pButton
+                                pRipple
+                                icon="pi pi-trash"
+                                class="p-button-rounded p-button-warning"
+                                (click)="deleteFormation(formation)"
+                                *ngIf="isAdmin"
+                            ></button>
+                            <button
+                                style="margin-left: 2%"
+                                pButton
+                                pRipple
+                                icon="pi pi-youtube text-2xl"
+                                class="p-button-rounded p-button-danger mr-2"
+                                (click)="navigateToComponent(formation.id)"
+                            ></button>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="summary">
+                    <div
+                        class="flex align-items-center justify-content-between"
+                    >
+                        In total there are
+                        {{ formations ? formations.length : 0 }} formations.
+                    </div>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <p-dialog
+            [(visible)]="formationDialog"
+            [style]="{ width: '450px' }"
+            header="Formation Details"
+            [modal]="true"
+            styleClass="p-fluid"
+        >
+            <ng-template pTemplate="content">
+                <img [src]="'./test.png'" [style.width.px]="15" />
+                <div class="field">
+                    <label for="name">Name</label>
+                    <input
+                        type="text"
+                        pInputText
+                        id="name"
+                        [(ngModel)]="formation.formationName"
+                        required
+                        autofocus
+                    />
+                    <small class="p-error" *ngIf="!formation.formationName"
+                        >Name is required.</small
+                    >
+                </div>
+                <!-- <div class="field">
+        <label for="status">Status</label>
+        <p-checkbox [(ngModel)]="formation.formationStatus"></p-checkbox>
+      </div> -->
+                <!-- <div class="field">
+          <label for="status">Status</label>
+          <p-dropdown [(ngModel)]="formation.formationStatus">
+            <option value="Pending">Pending</option>
+            <option value="Active">Active</option>
+          </p-dropdown>
+        </div> -->
+                <!-- <div class="field">
+          <label for="status">Status</label>
+          <p-dropdown [(ngModel)]="formation.formationStatus" [showClear]="true">
+            <ng-template pTemplate="noResults">
+              <option value="Pending">Pending</option>
+              <option value="Active">Active</option>
+            </ng-template>
+          </p-dropdown>
+        </div> -->
+                <!-- <div class="field">
+          <label for="status">Status</label>
+          <p-dropdown [(ngModel)]="formation.formationStatus" [showClear]="true">
+            <option value="Pending">Pending</option>
+            <option value="Active">Active</option>
+          </p-dropdown>
+        </div> -->
+                <!-- <div class="field">
+                  <label for="status">Status</label>
+                  <input
+                      type="text"
+                      pInputText
+                      id="status"
+                      [(ngModel)]="formation.formationStatus"
+                      required
+                      autofocus
+                  />
+                  <small class="p-error" *ngIf="!formation.formationStatus"
+                      >Status is required.</small
+                  >
+              </div> -->
+
+                <div class="field">
+                    <label for="dateStart">Start Date</label>
+                    
+                    <p-calendar
+                        [(ngModel)]="formation.dateStart"
+                        [disabledDays]="[0, 6]"
+                        [firstDayOfWeek]="1"
+                        [showIcon]="true"
+                        appendTo="body"
+                        [minDate]="today"
+                    ></p-calendar>
+                    <small class="p-error" *ngIf="!formation.dateStart"
+                        >Start Date is required.</small
+                    >
+                </div>
+                <div class="field">
+                    <label for="dateFinish">Finish Date</label>
+                    <p-calendar
+                    [(ngModel)]="formation.dateFinish"
+                    [disabledDays]="[0, 6]"
+                    [firstDayOfWeek]="1"
+                    [showIcon]="true"
+                    appendTo="body"
+                    [minDate]="formation.dateStart!"
+                ></p-calendar>
+                    <small class="p-error" *ngIf="!formation.dateFinish"
+                        >Finish Date is required.</small
+                    >
+                </div>
+                <div class="field">
+                    <label for="users">members</label>
+                    <p-multiSelect
+                        [options]="users"
+                        [(ngModel)]="selectedUsers"
+                        optionLabel="email"
+                        appendTo="body"
+                    ></p-multiSelect>
+                </div>
+                <!-- <div class="field">
+                <label for="name">members</label>
+                <input
+                  type="text"
+                  pInputText
+                  id="name"
+                  [(ngModel)]="membersInput"
+                  required
+                  autofocus
+                />
+                <small class="p-error" *ngIf="!membersInput">members is required.</small>
+              </div> -->
+
+                <!-- ...remaining code... -->
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+                <button
+                    pButton
+                    pRipple
+                    label="Cancel"
+                    icon="pi pi-times"
+                    class="p-button-text"
+                    (click)="hideDialog()"
+                ></button>
+                <button
+                    pButton
+                    pRipple
+                    label="Save"
+                    icon="pi pi-check"
+                    class="p-button-text"
+                    (click)="saveFormation()"
+                ></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+    </div>
+</div>
